@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testimonios del Retiro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            body {
+                background-color: white;
+                color: black;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            th, td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: left;
+            }
+
+            th {
+                background-color: #f2f2f2;
+            }
+
+            h2 {
+                margin-bottom: 10px;
+                font-size: 24px;
+                font-weight: bold;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+
+        .delete-btn {
+            cursor: pointer;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: #ef4444;
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <div class="container mx-auto p-4">
+                <!-- Logo de Emaús -->
+                <div class="text-center mb-8">
+                    <img src="https://purissimabetera.es/wp-content/uploads/2020/11/Slide1_Pic2_636843678245890989.png" alt="Logo Emaús" class="mx-auto w-24">
+                    <h1 class="text-2xl font-bold text-gray-700">Testimonios - Retiro de Emaús</h1>
+                </div>
+        <!-- Título y Campo de Parroquia y Retiro -->
+        <div class="mb-4 no-print">
+            <label for="parroquiaRetiro" class="block text-gray-700">Parroquia y Retiro:</label>
+            <input type="text" id="parroquiaRetiro" class="border rounded w-full py-2 px-3 text-gray-700" placeholder="Escribe aquí la parroquia y retiro">
+        </div>
+        
+        <!-- Formulario para agregar testimonios -->
+        <div class="mb-4 no-print">
+            <label for="tema" class="block text-gray-700">Tema:</label>
+            <select id="tema" class="border rounded w-full py-2 px-3 text-gray-700">
+                <option value="Conociendo a Dios a través de conocerte a ti misma">Conociendo a Dios a través de conocerte a ti misma</option>
+                <option value="Conociendo a Dios a través del Padre">Conociendo a Dios a través del Padre</option>
+                <option value="Conociendo a Dios a través de dejar caer mis máscaras">Conociendo a Dios a través de dejar caer mis máscaras</option>
+                <option value="Conociendo a Dios a través de los Sacramentos">Conociendo a Dios a través de los Sacramentos</option>
+                <option value="Conociendo a Dios a través de la palabra">Conociendo a Dios a través de la palabra</option>
+                <option value="Conociendo a Dios a través de la oración">Conociendo a Dios a través de la oración</option>
+                <option value="Conociendo a Dios por la sanación de los recuerdos y el perdón">Conociendo a Dios por la sanación de los recuerdos y el perdón</option>
+                <option value="Conociendo a Dios a través de la Fe y la confianza">Conociendo a Dios a través de la Fe y la confianza</option>
+                <option value="Conociendo a Dios a través de familiares y amigos">Conociendo a Dios a través de familiares y amigos</option>
+                <option value="Conociendo a Dios a través del servicio">Conociendo a Dios a través del servicio</option>
+                <option value="Charla de la Virgen María">Charla de la Virgen María</option>
+            </select>
+        </div>
+        <div class="mb-4 no-print">
+            <label for="dia" class="block text-gray-700">Día:</label>
+            <select id="dia" class="border rounded w-full py-2 px-3 text-gray-700">
+                <option value="Viernes">Viernes</option>
+                <option value="Sábado">Sábado</option>
+                <option value="Domingo">Domingo</option>
+            </select>
+        </div>
+        <div class="mb-4 no-print">
+            <label for="hora" class="block text-gray-700">Hora:</label>
+            <input type="time" id="hora" class="border rounded w-full py-2 px-3 text-gray-700">
+        </div>
+        <div class="mb-4 no-print">
+            <label for="servidora" class="block text-gray-700">Servidora:</label>
+            <input type="text" id="servidora" class="border rounded w-full py-2 px-3 text-gray-700" placeholder="Nombre de la servidora">
+        </div>
+        <div class="mb-4 no-print">
+            <label for="cancion" class="block text-gray-700">Canción (YouTube o MP3):</label>
+            <input type="text" id="cancion" class="border rounded w-full py-2 px-3 text-gray-700" placeholder="URL de la canción">
+        </div>
+
+        <button onclick="agregarTestimonio()" class="bg-blue-500 text-white px-4 py-2 rounded no-print">AGREGAR</button>
+        <button onclick="resetData()" class="bg-red-500 text-white px-4 py-2 rounded ml-4 no-print">RESET</button>
+
+        <!-- Tabla de Testimonios -->
+        <h2 id="tituloEsquema" class="text-2xl font-bold mt-8"></h2>
+        <table id="tablaTestimonios" class="table-auto w-full mt-4 border-collapse">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="border px-4 py-2">Tema</th>
+                    <th class="border px-4 py-2">Día y Hora</th>
+                    <th class="border px-4 py-2">Servidora</th>
+                    <th class="border px-4 py-2">Canción</th>
+                    <th class="border px-4 py-2 no-print">Eliminar</th>
+                </tr>
+            </thead>
+            <tbody id="tablaBody"></tbody>
+        </table>
+
+        <!-- Botón para imprimir -->
+        <button onclick="imprimirTabla()" class="bg-green-500 text-white px-4 py-2 rounded mt-4 no-print">Imprimir Tabla</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const parroquiaRetiro = localStorage.getItem('parroquiaRetiro');
+            if (parroquiaRetiro) {
+                document.getElementById('parroquiaRetiro').value = parroquiaRetiro;
+                document.getElementById('tituloEsquema').textContent = parroquiaRetiro;
+            }
+
+            const testimonios = JSON.parse(localStorage.getItem('testimonios')) || [];
+            testimonios.forEach((testimonio, idx) => agregarFilaATabla(testimonio, idx));
+        });
+
+        function agregarTestimonio() {
+            const parroquiaRetiro = document.getElementById('parroquiaRetiro').value;
+            const tema = document.getElementById('tema').value;
+            const dia = document.getElementById('dia').value;
+            const hora = document.getElementById('hora').value;
+            const diaHora = `${dia} ${hora}`;
+            const servidora = document.getElementById('servidora').value;
+            const cancion = document.getElementById('cancion').value;
+
+            localStorage.setItem('parroquiaRetiro', parroquiaRetiro);
+            document.getElementById('tituloEsquema').textContent = parroquiaRetiro;
+
+            const testimonio = { tema, diaHora, servidora, cancion };
+            saveTestimonios(testimonio);
+            ordenarYMostrarTestimonios();
+        }
+
+        function agregarFilaATabla(testimonio, index) {
+            const tableBody = document.getElementById('tablaBody');
+            const newRow = document.createElement('tr');
+
+            const cancionCell = testimonio.cancion ? (isYouTubeLink(testimonio.cancion) ? `<a href="${testimonio.cancion}" target="_blank" class="text-blue-500">Ver Canción</a>` : testimonio.cancion) : 'No especificada';
+
+            newRow.innerHTML = `
+                <td class="border px-4 py-2">${testimonio.tema}</td>
+                <td class="border px-4 py-2">${testimonio.diaHora}</td>
+                <td class="border px-4 py-2">${testimonio.servidora}</td>
+                <td class="border px-4 py-2">${cancionCell}</td>
+                <td class="border px-4 py-2 no-print">
+                    <button class="delete-btn" onclick="eliminarTestimonio(${index})">Eliminar</button>
+                </td>
+            `;
+            tableBody.appendChild(newRow);
+        }
+
+        function saveTestimonios(testimonio) {
+            let testimonios = JSON.parse(localStorage.getItem('testimonios')) || [];
+            testimonios.push(testimonio);
+            localStorage.setItem('testimonios', JSON.stringify(testimonios));
+        }
+
+        function ordenarYMostrarTestimonios() {
+            let testimonios = JSON.parse(localStorage.getItem('testimonios')) || [];
+
+            testimonios.sort((a, b) => {
+                const [diaA, horaA] = a.diaHora.split(' ');
+                const [diaB, horaB] = b.diaHora.split(' ');
+
+                const diasOrden = { 'Viernes': 1, 'Sábado': 2, 'Domingo': 3 };
+                const horaOrdenA = horaA || '00:00';
+                const horaOrdenB = horaB || '00:00';
+
+                if (diasOrden[diaA] === diasOrden[diaB]) {
+                    return horaOrdenA.localeCompare(horaOrdenB);
+                }
+
+                return diasOrden[diaA] - diasOrden[diaB];
+            });
+
+            document.getElementById('tablaBody').innerHTML = '';
+            testimonios.forEach((testimonio, idx) => agregarFilaATabla(testimonio, idx));
+        }
+
+        function resetData() {
+            localStorage.clear();
+            document.getElementById('tablaBody').innerHTML = '';
+            document.getElementById('parroquiaRetiro').value = '';
+            document.getElementById('tituloEsquema').textContent = '';
+        }
+
+        function isYouTubeLink(link) {
+            return link.includes("youtube.com") || link.includes("youtu.be");
+        }
+
+        function imprimirTabla() {
+            window.print();
+        }
+
+        function eliminarTestimonio(index) {
+            let testimonios = JSON.parse(localStorage.getItem('testimonios')) || [];
+            testimonios.splice(index, 1);
+            localStorage.setItem('testimonios', JSON.stringify(testimonios));
+            ordenarYMostrarTestimonios();
+        }
+    </script>
+</body>
+</html>
